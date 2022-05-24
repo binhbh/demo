@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+import 'package:flutter_demo/data.dart';
+import 'package:flutter_demo/login.dart';
+import 'dart:ui';
 void main() {
   runApp(const MyApp());
 }
@@ -7,109 +11,583 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    return  MaterialApp(
+      home: MyStatefulWidget1(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
+// class Splash2 extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return SplashScreen(
+//       seconds: 6,
+//       navigateAfterSeconds: new SecondScreen(),
+//       title: new Text('GeeksForGeeks',textScaleFactor: 2,),
+//       image: new Image.network('https://www.geeksforgeeks.org/wp-content/uploads/gfg_200X200.png'),
+//       loadingText: Text("Loading"),
+//       photoSize: 100.0,
+//       loaderColor: Colors.blue,
+//     );
+//   }
+// }
+// class SecondScreen extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title:Text("GeeksForGeeks")),
+//       body: Center(
+//           child:Text("Home page",textScaleFactor: 2,)
+//       ),
+//     );
+//   }
+// }
+// class Splash3 extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title:Text("GeeksForGeeks")),
+//       body: Center(
+//           child:Text("Home page",textScaleFactor: 2,)
+//       ),
+//     );
+//   }
+// }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  final Map<String, dynamic> _allWords = jsonDecode(data);
+  late List<String> _allKeys;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _allKeys = _allWords.keys.toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    print(_allWords['abacus']![0]);
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+        drawer: NavigationDrawerWidget(), //drawer
+        body: NestedScrollView(
+          // Setting floatHeaderSlivers to true is required in order to float
+          // the outer slivers over the inner scrollable.
+          floatHeaderSlivers: true,
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverAppBar(
+                title: const Text('Floating Nested SliverAppBar'),
+                centerTitle: true,
+                floating: true,
+                backgroundColor: Colors.yellow,
+                forceElevated: innerBoxIsScrolled,
+                actions: <Widget>[
+                  IconButton(
+                    icon: const Icon(Icons.add_circle_outline),
+                    tooltip: 'Go to the next page',
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute<void>(
+                        builder: (BuildContext context) {
+                          return Scaffold(
+                              backgroundColor: Colors.white,
+                              extendBodyBehindAppBar: true,
+                              body: NestedScrollView(
+                                floatHeaderSlivers: true,
+                                headerSliverBuilder: (BuildContext context,
+                                    bool innerBoxIsScrolled) {
+                                  return <Widget>[
+                                    SliverAppBar(
+                                      title: const Text('add'),
+                                      centerTitle: true,
+                                      floating: true,
+                                      flexibleSpace: ClipRRect(
+                                        // child: Container(
+                                        //   decoration: BoxDecoration(
+                                        //   image: DecorationImage(
+                                        //     image: AssetImage('https://t3.ftcdn.net/jpg/02/10/16/80/360_F_210168041_TLGxhXJIRsndgShDagj3ZeuCj9nS1fZK.jpg'),
+                                        //     fit: BoxFit.fill),
+                                        //   ),
+                                        //   ),
+                                      ),
+                                      forceElevated: innerBoxIsScrolled,
+                                      backgroundColor: Colors.yellow,
+                                      elevation: 0,
+                                      actions: <Widget>[
+                                        IconButton(
+                                          onPressed: () {},
+                                          icon: Icon(Icons.save),
+                                          tooltip: 'Save',
+                                        ),
+                                      ],
+                                    ),
+                                  ];
+                                },
+                                body: Center(
+                                  child: ListView(
+                                    padding:
+                                    EdgeInsets.symmetric(horizontal: 18.0),
+                                    children: <Widget>[
+                                      Column(
+                                        children: <Widget>[
+                                          Column(
+                                            children: <Widget>[
+                                              SizedBox(
+                                                height: 120,
+                                              ),
+                                              IconButton(
+                                                onPressed: () {},
+                                                icon:
+                                                Icon(Icons.account_circle),
+                                                iconSize: 50.0,
+                                              ),
+                                              SizedBox(
+                                                height: 30,
+                                              ),
+                                              Text('ADD',
+                                                  style: TextStyle(
+                                                      fontSize: 30,
+                                                      color: Colors.blue)),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: 60.0,
+                                          ),
+                                          TextField(
+                                            decoration: InputDecoration(
+                                              labelStyle:
+                                              TextStyle(fontSize: 20),
+                                              labelText: "Email",
+                                              helperText: 'àààấdfsdfsdfs',
+                                              filled: true,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 60.0,
+                                      ),
+                                      TextField(
+                                        decoration: InputDecoration(
+                                          labelStyle: TextStyle(fontSize: 20),
+                                          labelText: "Email",
+                                          filled: true,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 60.0,
+                                      ),
+                                      TextField(
+                                        decoration: InputDecoration(
+                                          labelStyle: TextStyle(fontSize: 20),
+                                          labelText: "Email",
+                                          filled: true,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 20.0,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                        children: <Widget>[
+                                          ButtonTheme(
+                                              height: 50,
+                                              disabledColor: Colors.blue,
+                                              child: ButtonBar(
+                                                children: <Widget>[
+                                                  FlatButton(
+                                                    child: Text('Ok',
+                                                        style: const TextStyle(
+                                                            fontSize: 20)),
+                                                    color: Colors.blue,
+                                                    height: 60.0,
+                                                    minWidth: 100.0,
+                                                    onPressed: () {
+                                                      /** */
+                                                    },
+                                                  ),
+                                                  FlatButton(
+                                                    child: Text('Cancel',
+                                                        style: const TextStyle(
+                                                            fontSize: 20)),
+                                                    color: Colors.blue,
+                                                    height: 60.0,
+                                                    minWidth: 100.0,
+                                                    onPressed: () {
+                                                      /** */
+                                                    },
+                                                  ),
+                                                ],
+                                              )),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ));
+                        },
+                      ));
+                    },
+                  ),
+                ],
+              ),
+            ];
+          },
+
+          body: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      _allKeys = _allWords.keys
+                          .where((key) =>
+                          key.toLowerCase().contains(value.toLowerCase()))
+                          .toList();
+                    });
+                  },
+                  onSubmitted: (value) {},
+                  decoration: const InputDecoration(
+                      labelText: 'Search', suffixIcon: Icon(Icons.search)),
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _allKeys.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final String key = _allKeys[index];
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            pickList1 = true;
+                            pickList2 = false;
+                            print('bbbbb');
+                          });
+                        },
+                        onLongPress: () {
+                          pickList1 = false;
+                          pickList2 = true;
+                          print('aaaaaaa');
+                        },
+                        child: ListTile(
+                          title: Text(key),
+                          trailing: InkWell(
+                            onTap: () {
+                              setState(() {
+                                pickList1 = true;
+                                pickList2 = false;
+                                print('bbbbb');
+                              });
+                            },
+                            onLongPress: () {
+                              pickList1 = false;
+                              pickList2 = true;
+                              print('aaaaaaa');
+                            },
+                            child: PopupMenuButton(
+                              itemBuilder: (context) {
+                                return pickList1 ? list1 : list2;
+                              },
+                              onSelected: (String value) {
+                                print('You Click on po up menu item');
+                              },
+                            ),
+                          ),
+                          subtitle: Text(_allWords[key][0]),
+                          // onTap: () {
+                          //   // Navigator.push(
+                          //   //   context,
+                          //   //   MaterialPageRoute(
+                          //   //     builder: (BuildContext context) =>
+                          //   //         DetailView(
+                          //   //             word: key,
+                          //   //             definition: _allWords[key][0],
+                          //   //             pronounce: _allWords[key][1]),
+                          //   //   ),
+                          //   // );
+                          // },
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+          ),
+        ));
+  }
+
+  bool pickList1 = true;
+  bool pickList2 = false;
+  List<PopupMenuEntry<String>> list1 = [
+    PopupMenuItem(
+      value: 'edit',
+      child: Text('Edit'),
+    ),
+    PopupMenuItem(
+      value: 'delete',
+      child: Text('Delete'),
+    )
+  ];
+  List<PopupMenuEntry<String>> list2 = [
+    PopupMenuItem(
+      value: 'edit',
+      child: Text('Edit'),
+    ),
+    PopupMenuItem(
+      value: 'edit',
+      child: Text('Edit'),
+    ),
+    PopupMenuItem(
+      value: 'edit',
+      child: Text('Edit'),
+    ),
+    PopupMenuItem(
+      value: 'delete',
+      child: Text('Delete'),
+    )
+  ];
+}
+
+class NavigationDrawerWidget extends StatelessWidget {
+  final padding = EdgeInsets.symmetric(horizontal: 20);
+
+  @override
+  Widget build(BuildContext context) {
+    final name = 'Sarah Abs';
+    final email = 'sarah@abs.com';
+    final urlImage =
+        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80';
+
+    return Drawer(
+      child: Material(
+        color: Colors.blue,
+        child: ListView(
+          children: <Widget>[
+            buildHeader(
+              urlImage: urlImage,
+              name: name,
+              email: email,
+              onClicked: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (BuildContext context) => UserPage(
+                  name: 'Sarah Abs',
+                  urlImage: urlImage,
+                ),
+              )),
+            ),
+            Container(
+              padding: padding,
+              child: Column(
+                children: [
+                  const SizedBox(height: 24),
+                  buildMenuItem(
+                    text: 'People',
+                    icon: Icons.people,
+                    onClicked: () => selectedItem(context, 0),
+                  ),
+                  const SizedBox(height: 16),
+                  buildMenuItem(
+                    text: 'Favourites',
+                    icon: Icons.favorite_border,
+                    onClicked: () => selectedItem(context, 1),
+                  ),
+                  const SizedBox(height: 16),
+                  buildMenuItem(
+                    text: 'Workflow',
+                    icon: Icons.workspaces_outline,
+                    onClicked: () => selectedItem(context, 2),
+                  ),
+                  const SizedBox(height: 16),
+                  buildMenuItem(
+                    text: 'Updates',
+                    icon: Icons.update,
+                    onClicked: () => selectedItem(context, 3),
+                  ),
+                  const SizedBox(height: 24),
+                  Divider(color: Colors.white70),
+                  const SizedBox(height: 24),
+                  buildMenuItem(
+                    text: 'Plugins',
+                    icon: Icons.account_tree_outlined,
+                    onClicked: () => selectedItem(context, 4),
+                  ),
+                  const SizedBox(height: 16),
+                  buildMenuItem(
+                    text: 'Notifications',
+                    icon: Icons.notifications_outlined,
+                    onClicked: () => selectedItem(context, 5),
+                  ),
+                  const SizedBox(height: 16),
+                  buildMenuItem(
+                    text: 'Sign Out ',
+                    icon: Icons.login,
+                    onClicked: () => selectedItem(context, 5),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  Widget buildHeader({
+    required String urlImage,
+    required String name,
+    required String email,
+    required VoidCallback onClicked,
+  }) =>
+      InkWell(
+        onTap: onClicked,
+        child: Container(
+          padding: padding.add(EdgeInsets.symmetric(vertical: 40)),
+          child: Row(
+            children: [
+              CircleAvatar(radius: 30, backgroundImage: NetworkImage(urlImage)),
+              SizedBox(width: 20),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    email,
+                    style: TextStyle(fontSize: 14, color: Colors.white),
+                  ),
+                ],
+              ),
+              Spacer(),
+            ],
+          ),
+        ),
+      );
+
+  Widget buildMenuItem({
+    required String text,
+    required IconData icon,
+    required VoidCallback? onClicked,
+  }) {
+    final color = Colors.white;
+    final hoverColor = Colors.white70;
+
+    return ListTile(
+      leading: Icon(icon, color: color),
+      title: Text(text, style: TextStyle(color: color)),
+      hoverColor: hoverColor,
+      onTap: onClicked,
+    );
+  }
+
+  void selectedItem(BuildContext context, int index) {
+    Navigator.of(context).pop();
+    switch (index) {
+      case 0:
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => PeoplePage(),
+        ));
+        break;
+      case 1:
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => FavouritesPage(),
+        ));
+        break;
+    }
+  }
+}
+
+class FavouritesPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      title: Text('Favourites'),
+      centerTitle: true,
+      backgroundColor: Colors.red,
+    ),
+  );
+}
+
+class PeoplePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    //drawer: NavigationDrawerWidget(),
+    appBar: AppBar(
+      title: Text('People'),
+      centerTitle: true,
+      backgroundColor: Colors.green,
+    ),
+  );
+}
+
+class UserPage extends StatelessWidget {
+  final String name;
+  final String urlImage;
+
+  const UserPage({
+    Key? key,
+    required this.name,
+    required this.urlImage,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      backgroundColor: Colors.pink,
+      title: Text(name),
+      centerTitle: true,
+    ),
+    body: Image.network(
+      urlImage,
+      width: double.infinity,
+      height: double.infinity,
+      fit: BoxFit.cover,
+    ),
+  );
+}
+
+class DetailView extends StatelessWidget {
+  const DetailView(
+      {Key? key,
+        required this.word,
+        required this.definition,
+        required this.pronounce})
+      : super(key: key);
+  final String word;
+  final String definition;
+  final String pronounce;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(word),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(pronounce),
+              Text(definition),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
